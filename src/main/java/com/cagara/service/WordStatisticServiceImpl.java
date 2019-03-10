@@ -1,42 +1,36 @@
 package com.cagara.service;
 
-import com.cagara.dto.Statistics;
-import com.cagara.dto.WordStatistics;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.cagara.dto.WordStatistic;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-
-@Service
-public class WordStatisticServiceImpl implements WordStatisticService {
-
+public class WordStatisticServiceImpl implements WordStatisticService{
 
     private final TextService textService;
 
-    @Autowired
     public WordStatisticServiceImpl(TextService textService) {
         this.textService = textService;
     }
 
+
     @Override
-    public Statistics calculateStatistics(String text) {
-        long numberOfSentence = textService.getNumberOfSentence(text);
-        long numberOfWhiteSpace = textService.getNumberOfWhiteSpace(text);
-        long numberOfAllCharacter = textService.getNumberOfAllCharacter(text);
-        long numberOfNonAlphabeticCharacter = textService.getNumberOfNonAlphabeticCharacter(text);
-        List<WordStatistics> topTenWordsGreaterThanFiveLetter = textService.findTopTenWordsGreaterThanFiveLetter(text);
-        return Statistics.builder()
-                .wordStatistics(topTenWordsGreaterThanFiveLetter)
-                .numberOfSentence(numberOfSentence)
-                .numberOfWhiteSpace(numberOfWhiteSpace)
-                .numberOfAllCharacter(numberOfAllCharacter)
-                .numberOfNonAlphabeticCharacter(numberOfNonAlphabeticCharacter)
-                .build();
+    public List<WordStatistic> findTopTenWordsGreaterThanFiveLetter(String text) {
+        List<String> wordsGreaterThanFiveLetters = textService.getWordsGreaterThan(text, 5);
+        Map<String, Integer> map = new HashMap<>();
+        for (String wordsGreaterThanFiveLetter : wordsGreaterThanFiveLetters) {
+            Integer numberOfWords = map.get(wordsGreaterThanFiveLetter) == null ? 0 : map.get(wordsGreaterThanFiveLetter);
+            map.put(wordsGreaterThanFiveLetter, numberOfWords + 1);
+        }
+        return map.entrySet()
+                .stream()
+                .sorted((Map.Entry<String, Integer> e1, Map.Entry<String, Integer> e2) -> e2.getValue()
+                        .compareTo(e1.getValue())
+                )
+                .map(e -> WordStatistic.of(e.getKey(), e.getValue()))
+                .limit(10)
+                .collect(Collectors.toList());
     }
-
-
-
-
-
 }

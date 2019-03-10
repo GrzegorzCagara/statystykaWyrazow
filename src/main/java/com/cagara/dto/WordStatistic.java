@@ -7,21 +7,16 @@ import lombok.Getter;
 @Getter
 @Builder
 @EqualsAndHashCode
-public class WordStatistics {
+public class WordStatistic {
 
     private final String word;
     private final Integer wordsCount;
 
 
-    public static WordStatistics of(String word, Integer wordsCount) {
-        return WordStatistics.builder()
+    public static WordStatistic of(String word, Integer wordsCount) {
+        return WordStatistic.builder()
                 .word(word)
                 .wordsCount(wordsCount)
                 .build();
-    }
-
-    @Override
-    public String toString() {
-        return this.word + " : " + this.wordsCount + "\n";
     }
 }

@@ -1,10 +1,7 @@
 package com.cagara;
 
 import com.cagara.dto.Statistics;
-import com.cagara.service.TextService;
-import com.cagara.service.TextServiceImpl;
-import com.cagara.service.WordStatisticService;
-import com.cagara.service.WordStatisticServiceImpl;
+import com.cagara.service.*;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,8 +14,10 @@ public class WordApplication {
 
 		TextService textService = new TextServiceImpl();
 		WordStatisticService wordStatisticService = new WordStatisticServiceImpl(textService);
+		AlphabetStatisticService alphabetStatisticService = new AlphabetStatisticServiceImpl();
+		StatisticService statisticService = new StatisticServiceImpl(textService, wordStatisticService, alphabetStatisticService);
 
-		Statistics statistics = wordStatisticService.calculateStatistics(content);
+		Statistics statistics = statisticService.calculateStatistics(content);
 		statistics.printStatistics();
 	}
 

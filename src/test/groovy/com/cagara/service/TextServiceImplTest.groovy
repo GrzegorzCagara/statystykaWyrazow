@@ -1,6 +1,6 @@
 package com.cagara.service
 
-import com.cagara.dto.WordStatistics
+import com.cagara.dto.WordStatistic
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -109,26 +109,6 @@ class TextServiceImplTest extends Specification {
         null                              || []
     }
 
-    @Unroll
-    def "should find top 10 words greater than five letters"() {
-        given:
-        String text = "XXXXXX, Pancernik, ma kota kota, psa, kota, XXXXXX, Pancernik, Ala, psa, Pancernik,  żółw, królik, jeleń, zółw, krolik, " +
-                "lew, orangutan, Ala, orangutan,  dinozaur, orangutan królik, tygrys, blabla, adsadrty, asdasdff, qweqweqwe, owetwet, sdfsdf, krolik, xxxx, " +
-                "yyyy, aa, aa, bb, bb, cc, cc, dd, dd, ee, ee, XXXXXX, XXXXXX, tygrys, dinozaur, orangutan, lezajsk, lezajsk, lublin, krakow, ac, krakow"
 
-        when:
-        List<WordStatistics> result = sut.findTopTenWordsGreaterThanFiveLetter(text)
-
-        then:
-        result.contains(WordStatistics.of("kota", 1)) == false
-        result.contains(WordStatistics.of("psa", 2)) == false
-        result.contains(WordStatistics.of("XXXXXX", 4)) == true
-        result.contains(WordStatistics.of("Pancernik", 3)) == true
-        result.contains(WordStatistics.of("dinozaur", 2)) == true
-        result.contains(WordStatistics.of("orangutan", 4)) == true
-        result.contains(WordStatistics.of("krakow", 2)) == true
-        result.contains(WordStatistics.of("lezajsk", 2)) == true
-        result.contains(WordStatistics.of("krolik", 2)) == true
-    }
 
 }

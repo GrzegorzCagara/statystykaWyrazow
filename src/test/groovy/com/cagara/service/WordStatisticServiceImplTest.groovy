@@ -1,37 +1,37 @@
 package com.cagara.service
 
-import com.cagara.dto.Statistics
+import com.cagara.dto.WordStatistic
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class WordStatisticServiceImplTest extends Specification {
-
-    private static long NUMBER_OF_SENTENCE = 3
-    private static long NUMBER_OF_WHITE_SPACES = 10
-    private static long NUMBER_OF_ALL_CHARACTER = 30
-    private static long NUMBER_OF_NON_ALPHABETIC_CHARACTER = 15
 
 
     private TextService textService = Mock()
 
     private WordStatisticService sut = new WordStatisticServiceImpl(textService)
 
-    def "should calculate statistics"() {
+    @Unroll
+    def "should find top 10 words greater than five letters"() {
         given:
-        Statistics expectedResult =
-                Statistics.builder()
-                .numberOfSentence(NUMBER_OF_SENTENCE)
-                .numberOfWhiteSpace(NUMBER_OF_WHITE_SPACES)
-                .numberOfAllCharacter(NUMBER_OF_ALL_CHARACTER)
-                .numberOfNonAlphabeticCharacter(NUMBER_OF_NON_ALPHABETIC_CHARACTER)
-                .build()
+        List<String> listOfWordsGreaterThanFiveLetters =
+                ["Pancernik", "dinozaur", "orangutan", "krakow", "lezajsk", "lezajsk",
+                 "krolik", "Pancernik", "XXXXXX", "Pancernik", "XXXXXX", "XXXXXX", "XXXXXX", "krolik", "krakow", "orangutan",
+                 "orangutan", "dinozaur", "orangutan"]
 
         when:
-        1 * textService.getNumberOfSentence(_ as String) >> NUMBER_OF_SENTENCE
-        1 * textService.getNumberOfWhiteSpace(_ as String) >> NUMBER_OF_WHITE_SPACES
-        1 * textService.getNumberOfAllCharacter(_ as String) >> NUMBER_OF_ALL_CHARACTER
-        1 * textService.getNumberOfNonAlphabeticCharacter(_ as String) >> NUMBER_OF_NON_ALPHABETIC_CHARACTER
+        textService.getWordsGreaterThan(_ as String, _ as Integer) >> listOfWordsGreaterThanFiveLetters
+        List<WordStatistic> result = sut.findTopTenWordsGreaterThanFiveLetter(_ as String)
 
         then:
-        expectedResult == sut.calculateStatistics(_ as String)
+        result.contains(WordStatistic.of("kota", 1)) == false
+        result.contains(WordStatistic.of("psa", 2)) == false
+        result.contains(WordStatistic.of("XXXXXX", 4)) == true
+        result.contains(WordStatistic.of("Pancernik", 3)) == true
+        result.contains(WordStatistic.of("dinozaur", 2)) == true
+        result.contains(WordStatistic.of("orangutan", 4)) == true
+        result.contains(WordStatistic.of("krakow", 2)) == true
+        result.contains(WordStatistic.of("lezajsk", 2)) == true
+        result.contains(WordStatistic.of("krolik", 2)) == true
     }
 }
